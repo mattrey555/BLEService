@@ -1,6 +1,5 @@
 <resources>
     <string name="action_settings">Settings</string>
-    <string name="fluke">Fluke</string>
     <string name="scan_devices">Scan Devices</string>
     <string name="stop_device_scan">Stop Device Scan</string>
     <string name="connect_failed">Connect Failed</string>
@@ -32,7 +31,6 @@
     <string name="workorders">Work Orders</string>
     <string name="help">Help</string>
     <string name="settings">Settings</string>
-    <string name="looking_for_devices">Looking for Fluke Connect tools</string>
     <string name="username">Username</string>
     <string name="signout">Sign Out</string>
     <string name="signout_confirm_message">Are you sure you want to sign out?</string>
@@ -129,7 +127,6 @@
     <string name="registration_email">Email</string>
     <string name="registration_code">Registration Code</string>
     <string name="registration_email_me">Email me with product updates and information</string>
-    <string name="registration_terms_of_service">Fluke Terms of Service and Privacy Policy</string>
     <string name="registration_wait_message">Completing registration</string>
     <string name="history_date_format">yyyy-MM-dd HH:mm</string>
     <string name="rescan_devices">Scan For New Devices</string>
