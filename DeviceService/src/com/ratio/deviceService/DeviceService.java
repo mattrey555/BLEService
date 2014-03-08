@@ -29,52 +29,144 @@ public class DeviceService extends Service implements BTLEDeviceManager.DeviceMa
 	private final static String TAG = DeviceService.class.getSimpleName();
  
     // broadcast messages
-    public final static String ACTION_GATT_CONNECTED = DeviceService.class.getName() + ".ACTION_GATT_CONNECTED";
-    public final static String ACTION_GATT_DISCONNECTED = DeviceService.class.getName() + ".ACTION_GATT_DISCONNECTED";
-    public final static String ACTION_GATT_SERVICES_DISCOVERED = DeviceService.class.getName() + ".ACTION_GATT_SERVICES_DISCOVERED";
-    public final static String ACTION_DATA_AVAILABLE =DeviceService.class.getName() + ".ACTION_DATA_AVAILABLE";
-    public final static String ACTION_SET_CHARACTERISTIC_NOTIFICATION = DeviceService.class.getName() + ".ACTION_SET_CHARACTERISTIC_NOTIFICATION";
-    public final static String ACTION_SCAN_DEVICES =DeviceService.class.getName() + ".ACTION_SCAN_DEVICES";
     public final static String ACTION_PERFORM_SCAN =DeviceService.class.getName() + ".ACTION_PERFORM_SCAN";
-    public final static String ACTION_GET_SERVICES =DeviceService.class.getName() + ".VICES";
+    /**
+     * Result from the getServices() call, which must be called after discoverServices()
+     */
+    public final static String ACTION_GET_SERVICES =DeviceService.class.getName() + ".ACTION_GET_SERVICES";
+    /**
+     * result from the getCharacteristics call, which must be called after discoverServices()
+     */
     public final static String ACTION_GET_CHARACTERISTICS =DeviceService.class.getName() + ".ACTION_GET_CHARACTERISTICS";
+    /**
+     * message sent when the device is out of range or disconnected, and the service is trying to connect again
+     */
     public final static String ACTION_RETRY_RECONNECT =DeviceService.class.getName() + ".ACTION_RETRY_RECONNECT";
+    /**
+     * message sent when the reconnect retry has failed
+     */
     public final static String ACTION_RECONNECT_FAILED =DeviceService.class.getName() + ".ACTION_RECONNECT_FAILED";
+    /**
+     * message sent when the device scan has completed
+     */
     public final static String ACTION_STOP_DEVICE_SCAN = DeviceService.class.getName() + ".ACTION_STOP_DEVICE_SCAN";
+    /**
+     * message sent when device scan has started
+     */
     public final static String ACTION_START_DEVICE_SCAN = DeviceService.class.getName() + ".ACTION_START_DEVICE_SCAN";
-    public final static String ACTION_GET_DEVICE_LIST = DeviceService.class.getName() + ".ACTION_GET_DEVICE_LIST";
-    public final static String ACTION_GET_DEVICE_PROFILE = DeviceService.class.getName() + ".ACTION_GET_DEVICE_PROFILE";
+    /**
+     * device discovered message.  The service filters repeated devices from the scan, so they're only returned once
+     * broadcast intent extras: EXTRA_DEVICE
+     */
     public final static String ACTION_DEVICE_DISCOVERED = DeviceService.class.getName() + ".ACTION_DEVICE_DISCOVERED";
-    public final static String ACTION_DEVICE_CONNECT = DeviceService.class.getName() + ".ACTION_DEVICE_CONNECT";
+    /**
+     * message sent when an exception is thrown in the device service
+     * broadcast intent extras: EXTRA_ERROR_MESSAGE, EXTRA_ERROR_CODE
+     */
     public final static String ACTION_ERROR = DeviceService.class.getName() + ".ACTION_ERROR";
+    /**
+     * message sent when the connection state changes
+     * broadcast intent extras: EXTRA_DEVICE, EXTRA_STATE
+     */
     public final static String ACTION_CONNECTION_STATE = DeviceService.class.getName() + ".ACTION_GATT_CONNECTION_STATE";
+    /**
+     * message sent when services have been discovered for a device
+	 * broadcast intent extras: EXTRA_DEVICE_ADDRESS, EXTRA_SERVICES
+     */
     public final static String ACTION_SERVICES_DISCOVERED = DeviceService.class.getName() + ".ACTION_SERVICES_DISCOVERED";
+    /**
+     * message sent when a characteristic read value is returned
+     * broadcast intent extras: EXTRA_DEVICE_ADDRESS, EXTRA_SERVICE, EXTRA_CHARACTERISTIC, EXTRA_VALUE
+     */
     public final static String ACTION_CHARACTERISTIC_READ = DeviceService.class.getName() + ".ACTION_CHARACTERISTIC_READ";
+    /**
+     * message sent when a characteristic write value is returned
+     * broadcast intent extras: EXTRA_DEVICE_ADDRESS, EXTRA_SERVICE, EXTRA_CHARACTERISTIC, EXTRA_VALUE
+     */
     public final static String ACTION_CHARACTERISTIC_WRITE = DeviceService.class.getName() + ".ACTION_CHARACTERISTIC_WRITE";
+    /**
+     * message sent when a characteristic changed value is returned
+      * broadcast intent extras: EXTRA_DEVICE_ADDRESS, EXTRA_SERVICE, EXTRA_CHARACTERISTIC, EXTRA_VALUE
+    */
     public final static String ACTION_CHARACTERISTIC_CHANGED = DeviceService.class.getName() + ".ACTION_CHARACTERISTIC_CHANGED";
+    /**
+     * message sent when a descriptor read is returned
+     * broadcast intent extras: EXTRA_DEVICE_ADDRESS, EXTRA_SERVICE, EXTRA_CHARACTERISTIC, EXTRA_VALUE
+     */
     public final static String ACTION_DESCRIPTOR_READ = DeviceService.class.getName() + ".ACTION_DESCRIPTOR_READ";
+    /**
+     * message sent when a descriptor write is returned
+     * broadcast intent extras: EXTRA_DEVICE_ADDRESS, EXTRA_SERVICE, EXTRA_CHARACTERISTIC, EXTRA_DESCRIPTOR, EXTRA_VALUE
+     */
     public final static String ACTION_DESCRIPTOR_WRITE = DeviceService.class.getName() + ".ACTION_DESCRIPTOR_WRITE";
+    /**
+     * internal message sent when the adapter was reset
+     * broadcast intent extras: EXTRA_DEVICE_ADDRESS, EXTRA_SERVICE, EXTRA_CHARACTERISTIC, EXTRA_DESCRIPTOR, EXTRA_VALUE
+     */
     public final static String RESET_ADAPTER = DeviceService.class.getName() + ".RESET_ADAPTER";
-    public final static String ACTION_DEVICE_PROFILE = DeviceService.class.getName() + ".ACTION_DEVICE_PROFILE";
+    /**
+     * message sent when Received Signal Strenth is read from the devices
+     * broadcast intent extras: EXTRA_DEVICE_ADDRESS, EXTRA_RSSI
+     */
     public final static String ACTION_READ_RSSI = DeviceService.class.getName() + ".ACTION_READ_RSSI";
    
     // additional data sent along with intents in broadcast messages.
-    public final static String EXTRA_DATA = DeviceService.class.getName() + ".EXTRA_DATA";
-    public final static String EXTRA_SCAN_PERIOD_MSEC = DeviceService.class.getName() + ".EXTRA_SCAN_PERIOD";
-    public final static String EXTRA_ENABLE = DeviceService.class.getName() + ".EXTRA_ENABLE";
+    /**
+     * MAC address of the bluetooth device, represented as a string of the form XX:XX:XX:XX:XX:XX
+     */
     public final static String EXTRA_DEVICE_ADDRESS = DeviceService.class.getName() + ".EXTRA_DEVICE_ADDRESS";
+    /**
+     * returned bluetooth device, returned as a parcel
+     */
     public final static String EXTRA_DEVICE = DeviceService.class.getName() + ".EXTRA_DEVICE";
+    /**
+     * error message string returned from an internal exception message
+     */
     public final static String EXTRA_ERROR_MESSAGE = DeviceService.class.getName() + ".EXTRA_ERROR_MESSAGE";
+    /**
+     * error code from DeviceErrorCodes to identify the call that caused the exception
+     */
     public final static String EXTRA_ERROR_CODE = DeviceService.class.getName() + ".EXTRA_ERROR_CODE";
+    /**
+     * ArrayList of BTCharacteristicProfile
+     */
     public final static String EXTRA_CHARACTERISTICS = DeviceService.class.getName() + ".EXTRA_CHARACTERISTICS";
+    /**
+     * ArrayList of BTServiceProfile
+     */
     public final static String EXTRA_SERVICES = DeviceService.class.getName() + ".EXTRA_SERVICES";
+    /**
+     * integer state.  See BluetoothProfile.STATE_XXX
+     */
     public final static String EXTRA_STATE = DeviceService.class.getName() + ".EXTRA_STATE";
+    /**
+     * BTServiceProfile containing the service
+     */
     public final static String EXTRA_SERVICE = DeviceService.class.getName() + ".EXTRA_SERVICE";
+    /**
+     * BTCharactersticProfile containing the characteristic
+     */
     public final static String EXTRA_CHARACTERISTIC = DeviceService.class.getName() + ".EXTRA_CHARACTERISTIC";
+    /**
+     * BTDescriptorProfile containing the descriptor
+     */
     public final static String EXTRA_DESCRIPTOR = DeviceService.class.getName() + ".EXTRA_DESCRIPTOR";
+    /**
+     * byte[] value from the characteristic or descriptor
+     */
     public final static String EXTRA_VALUE = DeviceService.class.getName() + ".EXTRA_VALUE";
+    /**
+     * integer RSSI value
+     */
     public final static String EXTRA_RSSI = DeviceService.class.getName() + ".EXTRA_RSSI";
+    
+    /**
+     * status value from the connection
+     */
     public final static String EXTRA_STATUS = DeviceService.class.getName() + ".EXTRA_STATUS";
+    /**
+     * # of retries left on ACTION_RETRY_RECONNECT
+     */
     public final static String EXTRA_RETRIES_LEFT = DeviceService.class.getName() + ".EXTRA_RETRIES_LEFT";
        
     protected static BTLEDeviceManager	mDeviceManager;					// device manager actually does device interface
@@ -279,23 +371,37 @@ public class DeviceService extends Service implements BTLEDeviceManager.DeviceMa
 			}
 		}
 
+		/**
+		 * start the device scan.  The scan can be stopped with stopDeviceScan
+		 */
 		@Override
 		public void startDeviceScan() throws RemoteException {
 			mfScanning = true;
 			mDeviceManager.scanLeDevice(mAdvertisedServices, mPeriodMsec);
 		}
 
+		/**
+		 * stop the device scan
+		 */
 		@Override
 		public void stopDeviceScan() throws RemoteException {
 			mfScanning = false;
 			mDeviceManager.stopLeScan();			
 		}
 		
+		/**
+		 * are we currently scanning?
+		 */
 		@Override
 		public boolean isScanning() throws RemoteException {
 			return mfScanning;
 		}
 
+		/**
+		 * connect to a device with the specified deviceAddress (MAC address string: XX:XX:XX..)
+		 * @param deviceAddress MAC address of the device
+		 * @param timeoutMsec connection timeout in milliseconds
+		 */
 		@Override
 		public void connectDevice(String deviceAddress, long timeoutMsec) throws RemoteException {
 			try {
@@ -305,6 +411,11 @@ public class DeviceService extends Service implements BTLEDeviceManager.DeviceMa
 			}
 		}
 		
+		/**
+		 * disconnect from a device with the specified deviceAddress (MAC address string: XX:XX:XX..)
+		 * @param devicAddress  MAC address of the device
+		 * NOTE: this will cause a broadcast receiver message with ACTION_CONNECTION_STATE
+		 */
 		@Override
 		public void disconnectDevice(String deviceAddress) throws RemoteException {
 			try {
@@ -354,12 +465,15 @@ public class DeviceService extends Service implements BTLEDeviceManager.DeviceMa
 		public void getCharacteristics(String deviceAddress, String serviceUUID)
 				throws RemoteException {
 			try {
+				BluetoothGattService service = mDeviceManager.getDeviceInfo(deviceAddress).getGatt().getService(UUID.fromString(serviceUUID));
+				BTServiceProfile serviceProfile = new BTServiceProfile(service);
 				ArrayList<BluetoothGattCharacteristic> characteristics = new ArrayList<BluetoothGattCharacteristic>(mDeviceManager.getCharacteristics(deviceAddress, UUID.fromString(serviceUUID)));
 				ArrayList<BTCharacteristicProfile> characteristicProfiles = new ArrayList<BTCharacteristicProfile>(characteristics.size());
 				for (BluetoothGattCharacteristic btChar : characteristics) {
 					characteristicProfiles.add(new BTCharacteristicProfile(btChar));
 				}
 				Intent broadcastIntent = new Intent(ACTION_GET_CHARACTERISTICS);
+				broadcastIntent.putExtra(EXTRA_SERVICE, serviceProfile);
 				broadcastIntent.putExtra(EXTRA_CHARACTERISTICS, characteristicProfiles);
 				sendBroadcast(broadcastIntent);
 			} catch (Exception ex) {

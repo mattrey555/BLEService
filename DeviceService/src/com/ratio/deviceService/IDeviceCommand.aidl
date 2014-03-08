@@ -2,7 +2,6 @@ package com.ratio.deviceService;
 
 // interface to the DeviceService
 interface IDeviceCommand {
-	void scanDevices(in String[] advertisedServiceUUIDList, int periodMsec);
 	void startDeviceScan();
 	void stopDeviceScan();
 	boolean isScanning();
@@ -18,6 +17,7 @@ interface IDeviceCommand {
 	void writeCharacteristicInt(String deviceAddress, String serviceUUID, String characteristicUUID, int value, int format, int offset);
 	void writeDescriptor(String deviceAddress, String serviceUUID, String characteristicUUID, String descriptorUUID, in byte[] value);
 	void readDescriptor(String deviceAddress, String serviceUUID, String characteristicUUID, String descriptorUUID);
+	void scanDevices(in String[] advertisedServiceUUIDList, int periodMsec);
 	boolean isRetrying(String deviceAddress);
 	int getConnectionState(String deviceAddress);
 	void readRemoteRSSI(String deviceAddress);
