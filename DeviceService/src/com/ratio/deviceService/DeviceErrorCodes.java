@@ -1,5 +1,9 @@
 package com.ratio.deviceService;
 
+/**
+ * device error codes returned from the DeviceService
+ *
+ */
 public class DeviceErrorCodes {
 	/**
 	 * internal error thrown if enqueueing the command failed

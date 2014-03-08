@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import com.ratio.exceptions.DeviceManagerException;
 import com.ratio.exceptions.DeviceNameNotFoundException;
+import com.ratio.btdemo.CharacteristicDetailsActivity.DeviceServiceConnection;
+import com.ratio.btdemo.CharacteristicsActivity.RSSITimerTask;
 import com.ratio.deviceService.IDeviceCommand;
 
 import android.app.Service;
@@ -14,16 +16,33 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 /**
- * the device service is a than wrapper around the BTLEDeviceManager.  It provides an AIDL interface to call into the
- * BTLEDeviceManager, sets up a callback interface to respond to bluetooth device events, and forwards the events
- * via broadcast message.
- * @author mreynolds
- *
+ * Implements a DeviceService which discovers/communicates with BLE devices.  It provides a wrapper around the 
+ * BluetoothGattCallback and BLE calls, and sends the responses via AIDL.  
+ * use the following code to initialize the DeviceCommandImpl to issue commands to the service
+ *	private class DeviceServiceConnection implements ServiceConnection {
+ * 		public void onServiceConnected(ComponentName name, IBinder boundService) {
+ * 			mService = IDeviceCommand.Stub.asInterface((IBinder) boundService);
+ *		}
+ *          
+ * 		public void onServiceDisconnected(ComponentName name) {
+ *			mService = null;
+ *		}
+ * }
+ * 
+ * then to bind to the service:
+ * 	    mConnection = new DeviceServiceConnection();
+ *	 	Intent i = new Intent(this, DeviceService.class);
+ * 		boolean ret = bindService(i, mConnection, Context.BIND_AUTO_CREATE);
  */
 public class DeviceService extends Service implements BTLEDeviceManager.DeviceManagerCallback {
 	private final static String TAG = DeviceService.class.getSimpleName();
@@ -413,7 +432,7 @@ public class DeviceService extends Service implements BTLEDeviceManager.DeviceMa
 		
 		/**
 		 * disconnect from a device with the specified deviceAddress (MAC address string: XX:XX:XX..)
-		 * @param devicAddress  MAC address of the device
+		 * @param deviceAddress  MAC address of the device
 		 * NOTE: this will cause a broadcast receiver message with ACTION_CONNECTION_STATE
 		 */
 		@Override
